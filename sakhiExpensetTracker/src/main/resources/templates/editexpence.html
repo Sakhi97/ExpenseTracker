@@ -1,0 +1,46 @@
+<!DOCTYPEhtml>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Edit Expense</title>
+<link type="text/css" rel="stylesheet" href="../css/bootstrap.min.css"
+	th:href="@{../css/bootstrap.min.css}">
+</head>
+
+<body>
+	<div class="container">
+		<h1 class="text-center">Edit Expense</h1>
+		<div >
+			<form th:object="${expence}" th:action="@{../save}" action="#"
+				method="post">
+				<input type="hidden" th:field="*{id}" /> 
+					
+				<label for="amount">Amount</label>
+				<input class="form-control" type="text" id="amount"
+					th:field="*{amount}" /> 
+					
+				<label for="date">Date</label> 
+				<input class="form-control" type="date" id="date" th:field="*{date}" />
+				
+				
+			   <label for="remark">Remark</label> 
+			   <input class="form-control"
+					type="text" id="remark" th:field="*{remark}" /> 
+					
+					
+				<label for="catlist">Category</label>
+					
+				<select id="catlist" th:field="*{category}" class="form-control">
+					<option th:each="category: ${categorys}"
+						th:value="${category.categoryId}" th:text="${category.name}"></option>
+				</select>
+				
+				<div style="clear: both; display: block; height: 10px;"></div>
+
+				<input class="btn btn-success" type="submit" value="Save" />
+			</form>
+		</div>
+	</div>
+</body>
+
+</html>

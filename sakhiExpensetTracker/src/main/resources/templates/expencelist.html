@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<title>Expense List</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"
+	th:href="@{css/bootstrap.min.css}">
+</head>
+<body>
+	<div class="container">
+		<div class="col-md-4">
+			<h1>Expenses</h1>
+		</div>
+		<div>
+		<h3>Total Expenses: <span th:text="${totalExpenses}"></span></h3>
+		<div/>
+		<div class="col-md-4">
+			<h3>
+				Welcome <b sec:authentication="name"></b>
+			</h3>
+		</div>
+
+		<div class="col-md-4">
+			<div class="row">
+				<div class="col-md-4">
+					<a sec:authorize="hasAuthority('ADMIN')" th:href="@{/userlist}"
+						class="btn btn-info">User List</a>
+				</div>
+				<div class="col-md-4 d-flex justify-content-end">
+					<form th:action="@{/logout}" method="post">
+						<input type="submit" value="Sign Out"
+							class="btn btn-sm btn-danger" />
+					</form>
+				</div>
+				
+				<div class="col-md-4">
+					<a th:href="@{/userprofile}"
+						class="btn btn-info">User Profile</a>
+				</div>
+				<!-- Add this line before the "Sign Out" button -->
+			
+
+			</div>
+		</div>
+		<table class="table table-striped">
+			<thead>
+				<tr>
+					<th>Amount</th>
+					<th>Date</th>
+					<th>Remark</th>
+					<th>Category</th>
+					<th></th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="expence : ${expences}">
+					<td th:text="${expence.amount}"></td>
+					<td th:text="${expence.date}"></td>
+					<td th:text="${expence.remark}"></td>
+					<td th:text="${expence.category.name}"></td>
+					<td><a th:href="@{/delete/{id}(id=${expence.id})}"
+						class="btn btn-danger">Delete</a></td>
+
+					<td><a th:href="@{/edit/{id}(id=${expence.id})}"
+						class="btn btn-primary">Edit</a></td>
+				</tr>
+			</tbody>
+		</table>
+		<a href="/add" class="btn btn-success">Add Expense</a>
+	</div>
+	</div>
+</body>
+
+</html>
