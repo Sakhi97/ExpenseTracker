@@ -11,6 +11,14 @@ public class SignupForm {
     @NotEmpty
     @Size(min=5, max=30)
     private String email = "";
+    
+    @NotEmpty
+    @Size(min=1, max=30)
+    private String firstName = "";
+    
+    @NotEmpty
+    @Size(min=1, max=30)
+    private String lastName = "";
 
     public String getEmail() {
 		return email;
@@ -30,6 +38,23 @@ public class SignupForm {
 
     @NotEmpty
     private String role = "USER";
+    
+    public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
 
 	public String getUsername() {
 		return username;

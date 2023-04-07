@@ -1,9 +1,5 @@
 package com.example.sakhiExpensetTracker.domain;
 
-
-
-
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -11,38 +7,36 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDate; 
 
 @Entity
 public class Expence {
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
-	private double amount;
-	private String date;
-	private String remark;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
+    private double amount;
+    private LocalDate date; 
+    private String remark;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "appuserId")
     private AppUser appuser;
-	
-	
 
-	@ManyToOne
-	@JoinColumn(name = "categoryId")
-	private Category category;
+    @ManyToOne
+    @JoinColumn(name = "categoryId")
+    private Category category;
 
-	public Expence() {
-		super();
-	}
+    public Expence() {
+        super();
+    }
 
-	public Expence(double amount, String date, String remark, Category category) {
-		super();
-		this.amount = amount;
-		this.date = date;
-		this.remark = remark;
-		this.category = category;
-
-	}
+    public Expence(double amount, LocalDate date, String remark, Category category) { 
+        super();
+        this.amount = amount;
+        this.date = date;
+        this.remark = remark;
+        this.category = category;
+    }
 
 	public long getId() {
 		return id;
@@ -60,11 +54,11 @@ public class Expence {
 		this.amount = amount;
 	}
 
-	public String getDate() {
+	public LocalDate getDate() {
 		return date;
 	}
 
-	public void setDate(String date) {
+	public void setDate(LocalDate date) {
 		this.date = date;
 	}
 

@@ -36,8 +36,8 @@ public class SakhiExpensetTrackerApplication {
 			crepository.save(new Category("Other"));
 			
 			// Create users: 
-						AppUser user1 = new AppUser("user", "$2a$06$3jYRJrg0ghaaypjZ/.g4SethoeA51ph3UD4kZi9oPkeMTpjKU5uo6", "user@email.com", "USER");
-						AppUser user2 = new AppUser("admin", "$2a$10$0MMwY.IQqpsVc1jC8u7IJ.2rT8b0Cd3b3sfIBGV2zfgnPGtT4r0.C", "admin@gmail.com", "ADMIN");
+						AppUser user1 = new AppUser("user","user","user", "$2a$06$3jYRJrg0ghaaypjZ/.g4SethoeA51ph3UD4kZi9oPkeMTpjKU5uo6", "user@email.com", "USER", 0.0);
+						AppUser user2 = new AppUser("admin", "admin","admin", "$2a$10$0MMwY.IQqpsVc1jC8u7IJ.2rT8b0Cd3b3sfIBGV2zfgnPGtT4r0.C", "admin@gmail.com", "ADMIN", 0.0);
 						urepository.save(user1);
 						urepository.save(user2);
 			
@@ -45,11 +45,12 @@ public class SakhiExpensetTrackerApplication {
 
 		};
 		
-		
 	}
+	*/
 	
 	
-*/
+		
 	
+
 
 }

@@ -39,34 +39,44 @@ public class UserController {
      */
     @RequestMapping(value = "saveuser", method = RequestMethod.POST)
     public String save(@Valid @ModelAttribute("signupform") SignupForm signupForm, BindingResult bindingResult) {
-    	if (!bindingResult.hasErrors()) { // validation errors
-    		if (signupForm.getPassword().equals(signupForm.getPasswordCheck())) { // check password match		
-	    		String pwd = signupForm.getPassword();
-		    	BCryptPasswordEncoder bc = new BCryptPasswordEncoder();
-		    	String hashPwd = bc.encode(pwd);
-	
-		    	AppUser newUser = new AppUser();
-		    	newUser.setPasswordHash(hashPwd);
-		    	newUser.setUsername(signupForm.getUsername());
-		    	newUser.setRole("USER");
-		    	newUser.setEmail(signupForm.getEmail());
-		    	if (repository.findByUsername(signupForm.getUsername()) == null) { // Check if user exists
-		    		repository.save(newUser);
-		    	}
-		    	else {
-	    			bindingResult.rejectValue("username", "err.username", "Username already exists");    	
-	    			return "signup";		    		
-		    	}
-    		}
-    		else {
-    			bindingResult.rejectValue("passwordCheck", "err.passCheck", "Passwords does not match");    	
-    			return "signup";
-    		}
-    	}
-    	else {
-    		return "signup";
-    	}
-    	return "redirect:/login";    	
-    }    
+        if (!bindingResult.hasErrors()) { // validation errors
+            if (signupForm.getPassword().equals(signupForm.getPasswordCheck())) { // check password match       
+                String pwd = signupForm.getPassword();
+                BCryptPasswordEncoder bc = new BCryptPasswordEncoder();
+                String hashPwd = bc.encode(pwd);
+
+                AppUser newUser = new AppUser();
+                newUser.setPasswordHash(hashPwd);
+                newUser.setUsername(signupForm.getUsername());
+                newUser.setFirstName(signupForm.getFirstName());
+                newUser.setLastName(signupForm.getLastName());
+                newUser.setRole("USER");
+                newUser.setEmail(signupForm.getEmail());
+                newUser.setBudget(0.0);
+                
+                if (repository.findByUsername(signupForm.getUsername()) != null) { // Check if user exists
+                    bindingResult.rejectValue("username", "err.username", "Username already exists");     
+                    return "signup";               
+                }
+                
+                if (repository.findByEmail(signupForm.getEmail()) != null) { // Check if email exists
+                    bindingResult.rejectValue("email", "err.email", "Email already exists");     
+                    return "signup";               
+                }
+                
+                // Save the user only if username and email are unique
+                repository.save(newUser);
+            }
+            else {
+                bindingResult.rejectValue("passwordCheck", "err.passCheck", "Passwords do not match");     
+                return "signup";
+            }
+        }
+        else {
+            return "signup";
+        }
+        return "redirect:/login";     
+    }
+
     
 }

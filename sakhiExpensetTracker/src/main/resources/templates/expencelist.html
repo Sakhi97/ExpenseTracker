@@ -4,46 +4,156 @@
 <head>
 <title>Expense List</title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"
 	th:href="@{css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css" href="css/own.css"
+	th:href="@{/css/own.css}">
+
+<script>
+function toggleSearch() {
+    var form = document.getElementById("search-form");
+    var button = document.getElementById("search-button");
+    var cancelButton = document.getElementById("cancel-search-button");
+    var footerRow = document.getElementById("footer-row");
+    
+    if (form.style.display === "none") {
+        form.style.display = "block";
+        button.style.display = "none";
+        cancelButton.style.display = "block";
+        footerRow.style.display = "none";
+    } else {
+        form.style.display = "none";
+        button.style.display = "block";
+        cancelButton.style.display = "none";
+        footerRow.style.display = "table-row";
+    }
+}
+
+function handleSearchSubmit(event) {
+    event.preventDefault(); // Prevent the default form submission behavior
+
+    var footerRow = document.getElementById("footer-row");
+    var cancelButton = document.getElementById("cancel-search-button");
+
+    // Hide the footer row and show the cancel button after submitting the search form
+    footerRow.style.display = "none";
+    cancelButton.style.display = "block";
+
+    // Fetch and update the table content
+    var form = document.getElementById("search-form");
+    var formData = new FormData(form);
+
+    // Replace the URL '/search' with the actual URL that processes the search form on your server
+    fetch('/search', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        // Create a temporary DOM element to hold the fetched HTML content
+        var tempElement = document.createElement('div');
+        tempElement.innerHTML = data;
+
+        // Extract the tbody content from the fetched HTML
+        var fetchedTBody = tempElement.querySelector('table tbody');
+
+        // Replace the table content with the new data
+        var tableBody = document.querySelector("table tbody");
+        tableBody.innerHTML = fetchedTBody.innerHTML;
+    })
+    .catch(error => {
+        console.error('Error fetching search results:', error);
+    });
+
+    return false;
+}
+
+function cancelSearch() {
+    window.location.href = "/expencelist";
+}
+</script>
+
 </head>
 <body>
 	<div class="container">
-		<div class="col-md-4">
-			<h1>Expenses</h1>
-		</div>
-		<div>
-		<h3>Total Expenses: <span th:text="${totalExpenses}"></span></h3>
-		<div/>
-		<div class="col-md-4">
-			<h3>
-				Welcome <b sec:authentication="name"></b>
-			</h3>
-		</div>
-
-		<div class="col-md-4">
-			<div class="row">
-				<div class="col-md-4">
-					<a sec:authorize="hasAuthority('ADMIN')" th:href="@{/userlist}"
-						class="btn btn-info">User List</a>
-				</div>
-				<div class="col-md-4 d-flex justify-content-end">
-					<form th:action="@{/logout}" method="post">
-						<input type="submit" value="Sign Out"
-							class="btn btn-sm btn-danger" />
-					</form>
-				</div>
-				
-				<div class="col-md-4">
-					<a th:href="@{/userprofile}"
-						class="btn btn-info">User Profile</a>
-				</div>
-				<!-- Add this line before the "Sign Out" button -->
-			
-
+		<div class="row">
+			<div class="col-md-8 col-sm-12">
+				<h1>
+					Welcome <b sec:authentication="name"></b> <a
+						th:href="@{/userprofile}" class="btn btn-info">User Profile</a>
+				</h1>
+			</div>
+			<div class="col-md-4 col-sm-12 sign-out-container">
+				<form th:action="@{/logout}" method="post">
+					<input type="submit" value="Sign Out"
+						class="btn btn-sm btn-danger sign-out-button" />
+				</form>
 			</div>
 		</div>
-		<table class="table table-striped">
+		<div class="row mt-4">
+			<div class="col-md-4 col-sm-12">
+				<a sec:authorize="hasAuthority('ADMIN')" th:href="@{/userlist}"
+					class="btn btn-info">User List</a>
+			</div>
+			
+			
+
+			<div class="d-flex mb-3">
+				<form th:action="@{/updatebudget}" method="post"
+					class="form-inline mr-3">
+					
+						<label for="budget"></label> <input type="number" step="0.01"
+							class="form-control" id="budget" name="budget" placeholder="0.0"
+							required>
+					
+					<button type="submit" class="btn btn-primary" style="margin-left: 2px;">Set Budget</button>
+				</form>
+
+				<form th:action="@{/addtobudget}" method="post" class="form-inline">
+				
+						<label for="budget-add"></label> <input type="number" step="0.01"
+							class="form-control" id="budget-add" name="budgetAdd"
+							placeholder="0.0" required>
+					
+					<button type="submit" class="btn btn-success" style="margin-left: 2px;">Add to
+						Budget</button>
+				</form>
+				
+
+
+				
+					<button type="button" id="search-button" class="btn btn-primary"
+						onclick="toggleSearch()" style="margin-left: 15px;">Search</button>
+				
+			</div>
+
+		
+
+
+		<form th:action="@{/search}" method="post" id="search-form" style="display: none" onsubmit="return handleSearchSubmit(event);">
+		
+			<div class="form-group">
+				<label for="searchDate">Date:</label> <input type="date"
+					id="searchDate" name="searchDate" class="form-control" />
+			</div>
+			<div class="form-group">
+				<label for="searchCategory">Category:</label> <select
+					id="searchCategory" name="searchCategory" class="form-control">
+					<option value="">All Categories</option>
+					<option th:each="category: ${categorys}"
+						th:value="${category.categoryId}" th:text="${category.name}"></option>
+				</select>
+			</div>
+			<div class="form-group">
+				<label for="searchRemark">Remark:</label> <input type="text"
+					id="searchRemark" name="searchRemark" class="form-control" />
+			</div>
+			<button type="submit" class="btn btn-primary" >Search</button>
+			
+		</form>
+
+		<table class="table table">
 			<thead>
 				<tr>
 					<th>Amount</th>
@@ -62,15 +172,35 @@
 					<td th:text="${expence.category.name}"></td>
 					<td><a th:href="@{/delete/{id}(id=${expence.id})}"
 						class="btn btn-danger">Delete</a></td>
-
 					<td><a th:href="@{/edit/{id}(id=${expence.id})}"
 						class="btn btn-primary">Edit</a></td>
 				</tr>
 			</tbody>
+			<tfoot>
+				<tr id="footer-row">
+					<td colspan="2" class="total-expenses">Budget: <span
+						style="font-weight: bold"
+						th:text="${#numbers.formatDecimal(budget, 1, 2)}"></span></td>
+					<td colspan="2" class="total-expenses">Total expenses: <span
+						style="font-weight: bold"
+						th:text="${#numbers.formatDecimal(totalExpenses, 1, 2)}"></span></td>
+					<td colspan="2" class="total-expenses">Remaining budget: <span
+						style="font-weight: bold"
+						th:text="${#numbers.formatDecimal(remainingBudget, 1, 2)}"></span>
+					</td>
+					
+					
+				</tr>
+			</tfoot>
 		</table>
 		<a href="/add" class="btn btn-success">Add Expense</a>
-	</div>
-	</div>
-</body>
+		
+		<button type="button" id="cancel-search-button" class="btn btn-secondary ml-2" onclick="cancelSearch()" style="display: none;">Cancel Search</button>
 
+
+
+</div>
+	</div>
+
+</body>
 </html>

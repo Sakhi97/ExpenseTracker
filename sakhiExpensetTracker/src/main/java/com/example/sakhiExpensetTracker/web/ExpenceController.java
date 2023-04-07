@@ -2,10 +2,12 @@ package com.example.sakhiExpensetTracker.web;
 
 
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.sakhiExpensetTracker.domain.AppUser;
 import com.example.sakhiExpensetTracker.domain.AppUserRepository;
+import com.example.sakhiExpensetTracker.domain.Category;
 import com.example.sakhiExpensetTracker.domain.CategoryRepository;
 import com.example.sakhiExpensetTracker.domain.Expence;
 import com.example.sakhiExpensetTracker.domain.ExpenceRepository;
@@ -46,47 +49,35 @@ public class ExpenceController {
 	}
 	
 
-/*
-	// List expenses
+
+	
+    // List expenses
 	@RequestMapping(value = { "/", "/expencelist" })
-	public String bookList(Model model) {
-		model.addAttribute("expences", repository.findAll());
-		return "expencelist";
+	public String expenseList(Model model) {
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	    String currentPrincipalName = authentication.getName();
+	    AppUser user = userRepository.findByUsername(currentPrincipalName);
+	    List<Expence> expenses = repository.findByAppuser(user);
+	        
+	    // Calculate the total expenses
+	    double totalExpenses = expenses.stream().mapToDouble(Expence::getAmount).sum();
+	        
+	    // Calculate the remaining budget
+	    double remainingBudget = user.getBudget() - totalExpenses;
+	    
+	    // Calculate the budget
+	    double budget = totalExpenses + remainingBudget;
+	        
+	    model.addAttribute("expences", expenses);
+	    model.addAttribute("totalExpenses", totalExpenses);
+	    model.addAttribute("remainingBudget", remainingBudget);
+	    model.addAttribute("budget", budget); 
+	    model.addAttribute("categorys", crepository.findAll());
+	    return "expencelist";
 	}
 	
-	*/
-	// List expenses
-    /*@RequestMapping(value = { "/", "/expencelist" })
-    public String expenseList(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        AppUser user = userRepository.findByUsername(currentPrincipalName);
-        model.addAttribute("expences", repository.findByAppuser(user));
-        return "expencelist";
-    }*/
-    
-    @RequestMapping(value = { "/", "/expencelist" })
-    public String expenseList(Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        AppUser user = userRepository.findByUsername(currentPrincipalName);
-        List<Expence> expenses = repository.findByAppuser(user);
-        
-        // Calculate the total expenses
-        double totalExpenses = expenses.stream().mapToDouble(Expence::getAmount).sum();
-        
-        model.addAttribute("expences", expenses);
-        model.addAttribute("totalExpenses", totalExpenses);
-        return "expencelist";
-    }
 	
-	/*
-	// RESTful service to get all expenses
-    @RequestMapping(value="/expences", method = RequestMethod.GET)
-    public @ResponseBody List<Expence> expensesListRest() {	
-        return (List<Expence>) repository.findAll();
-    }    
-    */
+	
     
  // RESTful service to get all expenses
     @RequestMapping(value="/expenses", method = RequestMethod.GET)
@@ -126,6 +117,7 @@ public class ExpenceController {
 	    return "redirect:/expencelist"; // Redirect to another page if not an admin
 	}
 	
+
 	@RequestMapping(value = "/userprofile", method = RequestMethod.GET)
 	public String userProfile(Model model) {
 	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -135,6 +127,7 @@ public class ExpenceController {
 	    return "userprofile";
 	}
 	
+	//change email or password
 	@RequestMapping(value = "/updateprofile", method = RequestMethod.POST)
 	public String updateUserProfile(@RequestParam("email") String email, @RequestParam("password") String password) {
 	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -147,11 +140,24 @@ public class ExpenceController {
 	    
 	    return "redirect:/expencelist";
 	}
+	
+	//update budget
+	@RequestMapping(value = "/updatebudget", method = RequestMethod.POST)
+	public String updateBudget(@RequestParam("budget") Double budget) {
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	    String currentPrincipalName = authentication.getName();
+	    AppUser currentUser = userRepository.findByUsername(currentPrincipalName);
+	    
+	    currentUser.setBudget(budget);
+	    userRepository.save(currentUser);
+	    
+	    return "redirect:/expencelist";
+	}
 
 
 	
 	
-	
+	//delete a user
 	@RequestMapping(value = "/deleteuser/{id}", method = RequestMethod.GET)
 	@PreAuthorize("hasRole('ADMIN')")
 	public String deleteUser(@PathVariable("id") Long userId, Model model) {
@@ -173,16 +179,22 @@ public class ExpenceController {
 
 	    return "redirect:/userlist";
 	}
-	/*
 
-	// Save an expense
-	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String save(Expence expence) {
-		repository.save(expence);
-		return "redirect:expencelist";
-	}
-*/
+
 	
+	//Add to budget
+	@RequestMapping(value = "/addtobudget", method = RequestMethod.POST)
+	public String addToBudget(@RequestParam("budgetAdd") double budgetToAdd) {
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	    String currentPrincipalName = authentication.getName();
+	    AppUser currentUser = userRepository.findByUsername(currentPrincipalName);
+	    
+	    double newBudget = currentUser.getBudget() + budgetToAdd;
+	    currentUser.setBudget(newBudget);
+	    userRepository.save(currentUser);
+	    
+	    return "redirect:/expencelist";
+	}
 	// Save an expense
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     public String save(Expence expence) {
@@ -206,6 +218,48 @@ public class ExpenceController {
 		model.addAttribute("expence", repository.findById(expenceId));
 		model.addAttribute("categorys", crepository.findAll());
 		return "editexpence";
+	}
+	
+	@RequestMapping(value = "/search", method = RequestMethod.POST)
+	public String searchExpences(@RequestParam(value = "searchDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate searchDate,
+	                             @RequestParam(value = "searchCategory", required = false) Long searchCategoryId,
+	                             @RequestParam(value = "searchRemark", required = false) String searchRemark,
+	                             Model model) {
+	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	    String currentPrincipalName = authentication.getName();
+	    AppUser user = userRepository.findByUsername(currentPrincipalName);
+
+	    List<Expence> expenses;
+	    
+	    Category searchCategory = searchCategoryId != null ? crepository.findById(searchCategoryId).orElse(null) : null;
+
+	    if (searchDate != null && searchCategory != null && searchRemark != null) {
+	        expenses = repository.findByAppuserAndDateAndCategoryAndRemarkContainingIgnoreCase(user, searchDate, searchCategory, searchRemark);
+	    } else if (searchDate != null && searchCategory != null) {
+	        expenses = repository.findByAppuserAndDateAndCategory(user, searchDate, searchCategory);
+	    } else if (searchDate != null && searchRemark != null) {
+	        expenses = repository.findByAppuserAndDateAndRemarkContainingIgnoreCase(user, searchDate, searchRemark);
+	    } else if (searchCategory != null && searchRemark != null) {
+	        expenses = repository.findByAppuserAndCategoryAndRemarkContainingIgnoreCase(user, searchCategory, searchRemark);
+	    } else if (searchDate != null) {
+	        expenses = repository.findByAppuserAndDate(user, searchDate);
+	    } else if (searchCategory != null) {
+	        expenses = repository.findByAppuserAndCategory(user, searchCategory);
+	    } else if (searchRemark != null) {
+	        expenses = repository.findByAppuserAndRemarkContainingIgnoreCase(user, searchRemark);
+	    } else {
+	        expenses = repository.findByAppuser(user);
+	    }
+
+	    double totalExpenses = expenses.stream().mapToDouble(Expence::getAmount).sum();
+	    double remainingBudget = user.getBudget() - totalExpenses;
+
+	    model.addAttribute("expences", expenses);
+	    model.addAttribute("totalExpenses", totalExpenses);
+	    model.addAttribute("remainingBudget", remainingBudget);
+	    model.addAttribute("categorys", crepository.findAll());
+
+	    return "expencelist";
 	}
 
 }
