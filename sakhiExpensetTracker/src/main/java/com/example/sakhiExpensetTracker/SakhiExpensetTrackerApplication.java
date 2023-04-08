@@ -5,6 +5,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.client.RestTemplate;
 
 import com.example.sakhiExpensetTracker.domain.AppUser;
 import com.example.sakhiExpensetTracker.domain.AppUserRepository;
@@ -20,6 +21,11 @@ public class SakhiExpensetTrackerApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SakhiExpensetTrackerApplication.class, args);
 	}
+	
+	@Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 	
 
 	/*
