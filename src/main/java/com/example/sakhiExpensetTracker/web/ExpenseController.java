@@ -158,7 +158,7 @@ public class ExpenseController {
 
 	    // Redirect user to login page if changing username and logged in with Github
 	    if (currentUser.getAuthProvider() == AuthenticationProvider.GITHUB && !username.isEmpty()) {
-	        return "redirect:/logout";
+	        return "redirect:/login";
 	    }
 
 	    return "redirect:/expenselist";
