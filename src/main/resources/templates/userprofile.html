@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>User Profile</title>
+<link type="text/css" rel="stylesheet" href="css/bootstrap.min.css"
+	th:href="@{css/bootstrap.min.css}">
+<link rel="stylesheet" type="text/css" href="css/own.css"
+	th:href="@{/css/own.css}">
+<script>
+	function toggleEdit(inputId, buttonId) {
+		var input = document.getElementById(inputId);
+		var editButton = document.getElementById(buttonId);
+
+		if (input.readOnly) {
+			input.readOnly = false;
+			editButton.textContent = "Cancel";
+		} else {
+			input.readOnly = true;
+			editButton.textContent = "Edit";
+		}
+	}
+</script>
+</head>
+<body>
+	<div class="container">
+		<div class="row mt-5">
+			<div class="col-md-8 offset-md-2">
+				<h1 class="text-center">User Profile</h1>
+				<p th:if="${errorMessage}" th:text="${errorMessage}"
+					class="text-danger"></p>
+				<form th:action="@{/updateprofile}" method="post" class="mt-4">
+					<div class="form-group">
+						<label for="username">Username:</label>
+						<div class="input-group">
+							<input type="text" id="username" name="username"
+								th:value="${user.username}" class="form-control" required
+								readonly>
+							<div class="input-group-append">
+								<button type="button" id="edit-username-button"
+									class="btn btn-primary"
+									onclick="toggleEdit('username', 'edit-username-button')">Edit</button>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="firstname">First Name:</label>
+						<div class="input-group">
+							<input type="text" id="firstname" name="firstname"
+								th:value="${user.firstName}" class="form-control" required
+								readonly>
+							<div class="input-group-append">
+								<button type="button" id="edit-firstname-button"
+									class="btn btn-primary"
+									onclick="toggleEdit('firstname', 'edit-firstname-button')">Edit</button>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="lastname">Last Name:</label>
+						<div class="input-group">
+							<input type="text" id="lastname" name="lastname"
+								th:value="${user.lastName}" class="form-control" required
+								readonly>
+							<div class="input-group-append">
+								<button type="button" id="edit-lastname-button"
+									class="btn btn-primary"
+									onclick="toggleEdit('lastname', 'edit-lastname-button')">Edit</button>
+							</div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="email">Email:</label>
+						<div class="input-group">
+							<input type="email" id="email" name="email"
+								th:value="${user.email}" class="form-control" required readonly>
+							<div class="input-group-append">
+								<button type="button" id="edit-email-button"
+									class="btn btn-primary"
+									onclick="toggleEdit('email', 'edit-email-button')">Edit</button>
+							</div>
+						</div>
+					</div>
+					<div class="form-group" th:if="${#strings.isEmpty(user.authProvider) or user.authProvider.equals('GITHUB')}">
+						<label for="oldPassword">Current Password:</label> <input
+							type="password" id="oldPassword" name="oldPassword"
+							class="form-control"
+							placeholder="Enter current password to change password">
+					</div>
+					<div class="form-group" th:if="${#strings.isEmpty(user.authProvider) or user.authProvider.equals('GITHUB')}">
+						<label for="password">New Password:</label> <input type="password"
+							id="password" name="password" class="form-control"
+							placeholder="Enter new password">
+					</div>
+
+					<input type="submit" value="Update" class="btn btn-primary">
+				</form>
+				<a href="/expenselist" class="btn btn-info mt-3">Back to Expense
+					List</a>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+

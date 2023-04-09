@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+<title>Expense tracker app</title>
+<link type="text/css" rel="stylesheet" href="/css/bootstrap.min.css"
+	th:href="@{css/bootstrap.min.css}" />
+<style>
+.login-container {
+	margin-top: 100px;
+}
+
+.login-spacing {
+	margin-bottom: 15px;
+}
+</style>
+</head>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-md-4 offset-md-4 login-container">
+				<h2 class="text-center login-spacing">Welcome to Expense
+					Tracker App</h2>
+				<p class="text-center login-spacing">Please login to start
+					tracking your expenses</p>
+					<p class="text-center login-spacing">or</p>
+				<div>
+				<h5 class="text-center login-spacing"><a th:href="@{/oauth2/authorization/github}"> Sign in with your GitHub account</a></h5>
+				</div>
+				<div class="alert alert-danger" th:if="${param.error}">
+					Invalid username and password.</div>
+				<div class="alert alert-warning" th:if="${param.logout}">You
+					have been logged out.</div>
+				<form th:action="@{/login}" method="post">
+					<div class="form-group login-spacing">
+						<label for="username">Username:</label> <input type="text"
+							name="username" id="username" class="form-control" />
+					</div>
+					<div class="form-group login-spacing">
+						<label for="password">Password:</label> <input type="password"
+							name="password" id="password" class="form-control" />
+					</div>
+					<div class="form-group login-spacing">
+						<input type="submit" value="Login" class="btn btn-primary" />
+					</div>
+				</form>
+				<p class="text-center login-spacing">If you do not have an
+					account yet, please sign up.</p>
+				<div class="text-center">
+					<a th:href="@{/signup}">Sign-up</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
