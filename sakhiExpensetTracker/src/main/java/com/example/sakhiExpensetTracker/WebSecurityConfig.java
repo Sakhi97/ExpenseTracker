@@ -52,7 +52,7 @@ public class WebSecurityConfig {
             .and()
             .formLogin()
                 .loginPage("/login")
-                .defaultSuccessUrl("/expencelist", true)
+                .defaultSuccessUrl("/expenselist", true)
                 .permitAll()
             .and()
             .oauth2Login()

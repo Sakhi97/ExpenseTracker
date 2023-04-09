@@ -24,7 +24,7 @@ public class Category {
 	
 	@JsonIgnore
 	@OneToMany(cascade = CascadeType.ALL, mappedBy = "category")
-	private List<Expence> expences;
+	private List<Expense> expenses;
 
 	public Category() {
 	}
@@ -51,12 +51,12 @@ public class Category {
 		this.name = name;
 	}
 
-	public List<Expence> getExpences() {
-		return expences;
+	public List<Expense> getExpences() {
+		return expenses;
 	}
 
-	public void setExpences(List<Expence> expences) {
-		this.expences = expences;
+	public void setExpences(List<Expense> expenses) {
+		this.expenses = expenses;
 	}
 
 	

@@ -28,31 +28,39 @@ public class SakhiExpensetTrackerApplication {
     }
 	
 
-	/*
+	
 	@Bean
-	public CommandLineRunner Bookstore(CategoryRepository crepository, AppUserRepository urepository) {
-		return (args) -> {
+	public CommandLineRunner ExpenseTracker(CategoryRepository crepository, AppUserRepository urepository) {
+	    return (args) -> {
+	        String[] categoryNames = {
+	            "Hobbies", "Food", "Rent", "Transport",
+	            "Shopping", "Travelling", "Other"
+	        };
 
-			crepository.save(new Category("Hobbies"));
-			crepository.save(new Category("Food"));
-			crepository.save(new Category("Rent"));
-			crepository.save(new Category("Transport"));
-			crepository.save(new Category("Shopping"));
-			crepository.save(new Category("Travelling"));
-			crepository.save(new Category("Other"));
-			
-			// Create users: 
-						AppUser user1 = new AppUser("user","user","user", "$2a$06$3jYRJrg0ghaaypjZ/.g4SethoeA51ph3UD4kZi9oPkeMTpjKU5uo6", "user@email.com", "USER", 0.0);
-						AppUser user2 = new AppUser("admin", "admin","admin", "$2a$10$0MMwY.IQqpsVc1jC8u7IJ.2rT8b0Cd3b3sfIBGV2zfgnPGtT4r0.C", "admin@gmail.com", "ADMIN", 0.0);
-						urepository.save(user1);
-						urepository.save(user2);
-			
+	        for (String categoryName : categoryNames) {
+	            try {
+	                crepository.save(new Category(categoryName));
+	            } catch (Exception e) {
+	                System.err.println("Error occurred while saving category '" + categoryName + "': " + e.getMessage());
+	            }
+	        }
 
+	        // Create users:
+	        AppUser[] users = {
+	            new AppUser("user", "user", "user", "$2a$06$3jYRJrg0ghaaypjZ/.g4SethoeA51ph3UD4kZi9oPkeMTpjKU5uo6", "user@email.com", "USER", 0.0),
+	            new AppUser("admin", "admin", "admin", "$2a$10$0MMwY.IQqpsVc1jC8u7IJ.2rT8b0Cd3b3sfIBGV2zfgnPGtT4r0.C", "admin@gmail.com", "ADMIN", 0.0)
+	        };
 
-		};
-		
+	        for (AppUser user : users) {
+	            try {
+	                urepository.save(user);
+	            } catch (Exception e) {
+	                System.err.println("Error occurred while saving user '" + user.getUsername() + "': " + e.getMessage());
+	            }
+	        }
+	    };
 	}
-	*/
+
 	
 	
 		

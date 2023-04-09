@@ -10,7 +10,7 @@ import jakarta.persistence.ManyToOne;
 import java.time.LocalDate; 
 
 @Entity
-public class Expence {
+public class Expense {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
@@ -26,11 +26,11 @@ public class Expence {
     @JoinColumn(name = "categoryId")
     private Category category;
 
-    public Expence() {
+    public Expense() {
         super();
     }
 
-    public Expence(double amount, LocalDate date, String remark, Category category) { 
+    public Expense(double amount, LocalDate date, String remark, Category category) { 
         super();
         this.amount = amount;
         this.date = date;

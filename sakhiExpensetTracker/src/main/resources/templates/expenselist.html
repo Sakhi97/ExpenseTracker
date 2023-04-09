@@ -70,7 +70,7 @@ function handleSearchSubmit(event) {
 }
 
 function cancelSearch() {
-    window.location.href = "/expencelist";
+    window.location.href = "/expenselist";
 }
 </script>
 
@@ -165,14 +165,14 @@ function cancelSearch() {
 				</tr>
 			</thead>
 			<tbody>
-				<tr th:each="expence : ${expences}">
-					<td th:text="${expence.amount}"></td>
-					<td th:text="${expence.date}"></td>
-					<td th:text="${expence.remark}"></td>
-					<td th:text="${expence.category.name}"></td>
-					<td><a th:href="@{/delete/{id}(id=${expence.id})}"
+				<tr th:each="expense : ${expenses}">
+					<td th:text="${expense.amount}"></td>
+					<td th:text="${expense.date}"></td>
+					<td th:text="${expense.remark}"></td>
+					<td th:text="${expense.category.name}"></td>
+					<td><a th:href="@{/delete/{id}(id=${expense.id})}"
 						class="btn btn-danger">Delete</a></td>
-					<td><a th:href="@{/edit/{id}(id=${expence.id})}"
+					<td><a th:href="@{/edit/{id}(id=${expense.id})}"
 						class="btn btn-primary">Edit</a></td>
 				</tr>
 			</tbody>

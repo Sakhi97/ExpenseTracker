@@ -5,8 +5,6 @@ import java.util.Map;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-
 import com.example.sakhiExpensetTracker.domain.AppUser;
 
 public class CustomOAuth2User extends DefaultOAuth2User {
