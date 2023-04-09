@@ -16,6 +16,7 @@ This application is built using the following features provided by Spring Boot:
 * PostgreSQL databse as a main database for application
 * H2 database for running tests
 * OAuth 2.0 Log In with OpenID Connect and non-standard OAuth 2.0 Login (GitHub)
+* Deployed In Heroku
 * The application provides a simple user interface for managing expenses, categories, budgets, and user profiles. The main class of the application is the ExpenseController class, which handles the HTTP requests, interacts with the repositories, and returns the appropriate views.
 
 ## Key features of the Expense Tracker application include:
@@ -83,4 +84,16 @@ To run the application, execute the following command:
 `java -jar target/sakhi-expense-tracker-0.0.1-SNAPSHOT.jar`
 
 The application will be accessible at http://localhost:8080.
+
+To deploy in Heroku should be installed Heroku CLI. 
+
+
+
+
+
+
+
+should be added adds-on Heroku PostgreSQL database
+
+In application.properties 
 
