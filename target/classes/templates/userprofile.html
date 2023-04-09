@@ -8,20 +8,8 @@
 	th:href="@{css/bootstrap.min.css}">
 <link rel="stylesheet" type="text/css" href="css/own.css"
 	th:href="@{/css/own.css}">
-<script>
-	function toggleEdit(inputId, buttonId) {
-		var input = document.getElementById(inputId);
-		var editButton = document.getElementById(buttonId);
+<script src="js/main.js"></script>
 
-		if (input.readOnly) {
-			input.readOnly = false;
-			editButton.textContent = "Cancel";
-		} else {
-			input.readOnly = true;
-			editButton.textContent = "Edit";
-		}
-	}
-</script>
 </head>
 <body>
 	<div class="container">
@@ -82,13 +70,13 @@
 							</div>
 						</div>
 					</div>
-					<div class="form-group" th:if="${#strings.isEmpty(user.authProvider) or user.authProvider.equals('GITHUB')}">
+					<div class="form-group">
 						<label for="oldPassword">Current Password:</label> <input
 							type="password" id="oldPassword" name="oldPassword"
 							class="form-control"
 							placeholder="Enter current password to change password">
 					</div>
-					<div class="form-group" th:if="${#strings.isEmpty(user.authProvider) or user.authProvider.equals('GITHUB')}">
+					<div class="form-group">
 						<label for="password">New Password:</label> <input type="password"
 							id="password" name="password" class="form-control"
 							placeholder="Enter new password">

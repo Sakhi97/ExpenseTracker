@@ -1,7 +1,5 @@
 package com.example.sakhiExpensetTracker.web;
 
-
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -22,13 +20,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.sakhiExpensetTracker.domain.AppUser;
 import com.example.sakhiExpensetTracker.domain.AppUserRepository;
+import com.example.sakhiExpensetTracker.domain.AuthenticationProvider;
 import com.example.sakhiExpensetTracker.domain.Category;
 import com.example.sakhiExpensetTracker.domain.CategoryRepository;
 import com.example.sakhiExpensetTracker.domain.Expense;
 import com.example.sakhiExpensetTracker.domain.ExpenseRepository;
-
-
-
 
 @Controller
 public class ExpenseController {
@@ -46,63 +42,57 @@ public class ExpenseController {
 	private AppUserRepository userRepository;
 
 	// The method to display the login page
-	@RequestMapping(value="/login")
+	@RequestMapping(value = "/login")
 	public String login() {
-	    return "login";
+		return "login";
 	}
-	
 
-
-	
-    // The method to display the expense list
+	// The method to display the expense list
 	@RequestMapping(value = { "/", "/expenselist" })
 	public String expenseList(Model model) {
 		// Get the currently logged in user
-	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	    String currentPrincipalName = authentication.getName();
-	    AppUser user = userRepository.findByUsername(currentPrincipalName);
-	    // Find all the expenses associated with the current user
-	    List<Expense> expenses = repository.findByAppuser(user);
-	        
-	    // Calculate the total expenses
-	    double totalExpenses = expenses.stream().mapToDouble(Expense::getAmount).sum();
-	        
-	    // Calculate the remaining budget
-	    double remainingBudget = user.getBudget() - totalExpenses;
-	    
-	    // Calculate the budget
-	    double budget = totalExpenses + remainingBudget;
-	    
-	    // Add the necessary attributes to the model
-	    model.addAttribute("expenses", expenses);
-	    model.addAttribute("totalExpenses", totalExpenses);
-	    model.addAttribute("remainingBudget", remainingBudget);
-	    model.addAttribute("budget", budget); 
-	    model.addAttribute("categorys", crepository.findAll());
-	    
-	 // Return the expense list view
-	    return "expenselist";
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String currentPrincipalName = authentication.getName();
+		AppUser user = userRepository.findByUsername(currentPrincipalName);
+		// Find all the expenses associated with the current user
+		List<Expense> expenses = repository.findByAppuser(user);
+
+		// Calculate the total expenses
+		double totalExpenses = expenses.stream().mapToDouble(Expense::getAmount).sum();
+
+		// Calculate the remaining budget
+		double remainingBudget = user.getBudget() - totalExpenses;
+
+		// Calculate the budget
+		double budget = totalExpenses + remainingBudget;
+
+		// Add the necessary attributes to the model
+		model.addAttribute("expenses", expenses);
+		model.addAttribute("totalExpenses", totalExpenses);
+		model.addAttribute("remainingBudget", remainingBudget);
+		model.addAttribute("budget", budget);
+		model.addAttribute("categorys", crepository.findAll());
+
+		// Return the expense list view
+		return "expenselist";
 	}
-	
-	
-	
-    
- // RESTful service to get all expenses
-    @RequestMapping(value="/expenses", method = RequestMethod.GET)
-    public @ResponseBody List<Expense> expensesListRest() {
-    	// Get the currently logged in user
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        AppUser user = userRepository.findByUsername(currentPrincipalName);
-        
-        return (List<Expense>) repository.findByAppuser(user);
-    }
+
+	// RESTful service to get all expenses
+	@RequestMapping(value = "/expenses", method = RequestMethod.GET)
+	public @ResponseBody List<Expense> expensesListRest() {
+		// Get the currently logged in user
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String currentPrincipalName = authentication.getName();
+		AppUser user = userRepository.findByUsername(currentPrincipalName);
+
+		return (List<Expense>) repository.findByAppuser(user);
+	}
 
 	// RESTful service to get expenses by id
-    @RequestMapping(value="/expense/{id}", method = RequestMethod.GET)
-    public @ResponseBody Optional<Expense> findExpenseRest(@PathVariable("id") Long expenseId) {	
-    	return repository.findById(expenseId);
-    }       
+	@RequestMapping(value = "/expense/{id}", method = RequestMethod.GET)
+	public @ResponseBody Optional<Expense> findExpenseRest(@PathVariable("id") Long expenseId) {
+		return repository.findById(expenseId);
+	}
 
 	// Add an expense
 	@RequestMapping(value = "/add")
@@ -112,31 +102,34 @@ public class ExpenseController {
 		model.addAttribute("categorys", crepository.findAll());
 		return "addexpense";
 	}
+
 	// List users (only for admins)
 	@RequestMapping(value = "/userlist", method = RequestMethod.GET)
 	public String userList(Model model) {
-	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	    String currentPrincipalName = authentication.getName();
-	    AppUser currentUser = userRepository.findByUsername(currentPrincipalName);
-	    
-	    if (currentUser.isAdmin()) {
-	        model.addAttribute("users", userRepository.findAll());
-	        return "userlist";
-	    }
-	    
-	    return "redirect:/expenselist"; // Redirect to another page if not an admin
-	}
-	
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String currentPrincipalName = authentication.getName();
+		AppUser currentUser = userRepository.findByUsername(currentPrincipalName);
 
-	
-	
-	//User changes email or password
+		if (currentUser.isAdmin()) {
+			model.addAttribute("users", userRepository.findAll());
+			return "userlist";
+		}
+
+		return "redirect:/expenselist"; // Redirect to another page if not an admin
+	}
+
 	@RequestMapping(value = "/updateprofile", method = RequestMethod.POST)
-	public String updateUserProfile(@RequestParam("username") String username, @RequestParam("firstname") String firstname, @RequestParam("lastname") String lastname, @RequestParam("email") String email, @RequestParam("password") String newPassword, @RequestParam("oldPassword") String oldPassword, Model model) {
+	public String updateUserProfile(@RequestParam("username") String username,
+	                                 @RequestParam("firstname") String firstname,
+	                                 @RequestParam("lastname") String lastname,
+	                                 @RequestParam("email") String email,
+	                                 @RequestParam("password") String newPassword,
+	                                 @RequestParam("oldPassword") String oldPassword,
+	                                 Model model) {
 	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 	    String currentPrincipalName = authentication.getName();
 	    AppUser currentUser = userRepository.findByUsername(currentPrincipalName);
-	    
+
 	    if (!username.isEmpty()) {
 	        currentUser.setUsername(username);
 	    }
@@ -149,32 +142,40 @@ public class ExpenseController {
 	    if (!email.isEmpty()) {
 	        currentUser.setEmail(email);
 	    }
-	    
+
 	    if (!newPassword.isEmpty() && !oldPassword.isEmpty()) {
 	        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 	        if (passwordEncoder.matches(oldPassword, currentUser.getPasswordHash())) {
 	            currentUser.setPasswordHash(passwordEncoder.encode(newPassword));
 	        } else {
-	        	model.addAttribute("errorMessage", "Incorrect current password");
-	            model.addAttribute("user", currentUser); // Add this line to include the user object in the model
-	            return "userprofile"; // Assuming userprofile.html is the template for the profile page
+	            model.addAttribute("errorMessage", "Incorrect current password");
+	            model.addAttribute("user", currentUser);
+	            return "userprofile";
 	        }
 	    }
-	    
-	    userRepository.save(currentUser);
+
+	    currentUser = userRepository.save(currentUser);
+
+	    // Redirect user to login page if changing username and logged in with Github
+	    if (currentUser.getAuthProvider() == AuthenticationProvider.GITHUB && !username.isEmpty()) {
+	        return "redirect:/logout";
+	    }
+
 	    return "redirect:/expenselist";
 	}
-	
+
+
 	// Save an expense
-    @RequestMapping(value = "/save", method = RequestMethod.POST)
-    public String save(Expense expense) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentPrincipalName = authentication.getName();
-        AppUser user = userRepository.findByUsername(currentPrincipalName);
-        expense.setAppuser(user);
-        repository.save(expense);
-        return "redirect:expenselist";
-    }
+	@RequestMapping(value = "/save", method = RequestMethod.POST)
+	public String save(Expense expense) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String currentPrincipalName = authentication.getName();
+		AppUser user = userRepository.findByUsername(currentPrincipalName);
+		expense.setAppuser(user);
+		repository.save(expense);
+		return "redirect:expenselist";
+	}
+
 	// Delete an expense
 	@RequestMapping(value = "/delete/{id}", method = RequestMethod.GET)
 	public String deleteBook(@PathVariable("id") Long expenseId, Model model) {
@@ -189,125 +190,129 @@ public class ExpenseController {
 		model.addAttribute("categorys", crepository.findAll());
 		return "editexpense";
 	}
-	
+
 	// update budget
-		@RequestMapping(value = "/updatebudget", method = RequestMethod.POST)
-		public String updateBudget(@RequestParam("budget") Double budget) {
-			// Get the current authenticated user
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			String currentPrincipalName = authentication.getName();
-			AppUser currentUser = userRepository.findByUsername(currentPrincipalName);
+	@RequestMapping(value = "/updatebudget", method = RequestMethod.POST)
+	public String updateBudget(@RequestParam("budget") Double budget) {
+		// Get the current authenticated user
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String currentPrincipalName = authentication.getName();
+		AppUser currentUser = userRepository.findByUsername(currentPrincipalName);
 
-			// Update the budget of the current user with the new value
-			currentUser.setBudget(budget);
-			userRepository.save(currentUser);
+		// Update the budget of the current user with the new value
+		currentUser.setBudget(budget);
+		userRepository.save(currentUser);
 
-			return "redirect:/expenselist";
-		}
-		
-		// Show the user's profile page
-		@RequestMapping(value = "/userprofile", method = RequestMethod.GET)
-		public String userProfile(Model model) {
-			// Get the authenticated user's username
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			String currentPrincipalName = authentication.getName();
+		return "redirect:/expenselist";
+	}
 
-			// Find the user object using the username
-			AppUser currentUser = userRepository.findByUsername(currentPrincipalName);
+	// Show the user's profile page
+	@RequestMapping(value = "/userprofile", method = RequestMethod.GET)
+	public String userProfile(Model model) {
+		// Get the authenticated user's username
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String currentPrincipalName = authentication.getName();
 
-			// Add the user object to the model
-			model.addAttribute("user", currentUser);
+		// Find the user object using the username
+		AppUser currentUser = userRepository.findByUsername(currentPrincipalName);
 
-			// Return the view name
-			return "userprofile";
-		}
+		// Add the user object to the model
+		model.addAttribute("user", currentUser);
 
-		// delete a user
-		@RequestMapping(value = "/deleteuser/{id}", method = RequestMethod.GET)
-		@PreAuthorize("hasRole('ADMIN')")
-		public String deleteUser(@PathVariable("id") Long userId, Model model) {
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			String currentPrincipalName = authentication.getName();
-			AppUser currentUser = userRepository.findByUsername(currentPrincipalName);
+		// Return the view name
+		return "userprofile";
+	}
 
-			AppUser userToDelete = userRepository.findById(userId).orElse(null);
-			if (userToDelete != null) {
-				// Delete all expenses associated with the user
-				List<Expense> expensesToDelete = repository.findByAppuser(userToDelete);
-				for (Expense expense : expensesToDelete) {
-					repository.deleteById(expense.getId());
-				}
+	// delete a user
+	@RequestMapping(value = "/deleteuser/{id}", method = RequestMethod.GET)
+	@PreAuthorize("hasRole('ADMIN')")
+	public String deleteUser(@PathVariable("id") Long userId, Model model) {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String currentPrincipalName = authentication.getName();
+		AppUser currentUser = userRepository.findByUsername(currentPrincipalName);
 
-				// Delete the user
-				userRepository.deleteById(userId);
+		AppUser userToDelete = userRepository.findById(userId).orElse(null);
+		if (userToDelete != null) {
+			// Delete all expenses associated with the user
+			List<Expense> expensesToDelete = repository.findByAppuser(userToDelete);
+			for (Expense expense : expensesToDelete) {
+				repository.deleteById(expense.getId());
 			}
 
-			return "redirect:/userlist";
+			// Delete the user
+			userRepository.deleteById(userId);
 		}
 
-		// Add to budget
-		@RequestMapping(value = "/addtobudget", method = RequestMethod.POST)
-		public String addToBudget(@RequestParam("budgetAdd") double budgetToAdd) {
-			// Get the current authenticated user
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			String currentPrincipalName = authentication.getName();
-			AppUser currentUser = userRepository.findByUsername(currentPrincipalName);
+		return "redirect:/userlist";
+	}
 
-			// Add the specified value to the current user's budget
-			double newBudget = currentUser.getBudget() + budgetToAdd;
-			currentUser.setBudget(newBudget);
-			userRepository.save(currentUser);
+	// Add to budget
+	@RequestMapping(value = "/addtobudget", method = RequestMethod.POST)
+	public String addToBudget(@RequestParam("budgetAdd") double budgetToAdd) {
+		// Get the current authenticated user
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String currentPrincipalName = authentication.getName();
+		AppUser currentUser = userRepository.findByUsername(currentPrincipalName);
 
-			return "redirect:/expenselist";
-		}
-	
+		// Add the specified value to the current user's budget
+		double newBudget = currentUser.getBudget() + budgetToAdd;
+		currentUser.setBudget(newBudget);
+		userRepository.save(currentUser);
+
+		return "redirect:/expenselist";
+	}
+
 	@RequestMapping(value = "/search", method = RequestMethod.POST)
-	public String searchExpences(@RequestParam(value = "searchDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate searchDate,
-	                             @RequestParam(value = "searchCategory", required = false) Long searchCategoryId,
-	                             @RequestParam(value = "searchRemark", required = false) String searchRemark,
-	                             Model model) {
-	    // Get the current user's authentication information
-	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	    String currentPrincipalName = authentication.getName();
-	    // Find the current user in the app user repository
-	    AppUser user = userRepository.findByUsername(currentPrincipalName);
+	public String searchExpences(
+			@RequestParam(value = "searchDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate searchDate,
+			@RequestParam(value = "searchCategory", required = false) Long searchCategoryId,
+			@RequestParam(value = "searchRemark", required = false) String searchRemark, Model model) {
+		// Get the current user's authentication information
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		String currentPrincipalName = authentication.getName();
+		// Find the current user in the app user repository
+		AppUser user = userRepository.findByUsername(currentPrincipalName);
 
-	    List<Expense> expenses;
-	    
-	    // Get the search category from the category repository if the ID is not null, otherwise set it to null
-	    Category searchCategory = searchCategoryId != null ? crepository.findById(searchCategoryId).orElse(null) : null;
+		List<Expense> expenses;
 
-	    // Perform different types of searches based on which search criteria are provided
-	    if (searchDate != null && searchCategory != null && searchRemark != null) {
-	        expenses = repository.findByAppuserAndDateAndCategoryAndRemarkContainingIgnoreCase(user, searchDate, searchCategory, searchRemark);
-	    } else if (searchDate != null && searchCategory != null) {
-	        expenses = repository.findByAppuserAndDateAndCategory(user, searchDate, searchCategory);
-	    } else if (searchDate != null && searchRemark != null) {
-	        expenses = repository.findByAppuserAndDateAndRemarkContainingIgnoreCase(user, searchDate, searchRemark);
-	    } else if (searchCategory != null && searchRemark != null) {
-	        expenses = repository.findByAppuserAndCategoryAndRemarkContainingIgnoreCase(user, searchCategory, searchRemark);
-	    } else if (searchDate != null) {
-	        expenses = repository.findByAppuserAndDate(user, searchDate);
-	    } else if (searchCategory != null) {
-	        expenses = repository.findByAppuserAndCategory(user, searchCategory);
-	    } else if (searchRemark != null) {
-	        expenses = repository.findByAppuserAndRemarkContainingIgnoreCase(user, searchRemark);
-	    } else {
-	        expenses = repository.findByAppuser(user);
-	    }
+		// Get the search category from the category repository if the ID is not null,
+		// otherwise set it to null
+		Category searchCategory = searchCategoryId != null ? crepository.findById(searchCategoryId).orElse(null) : null;
 
-	    // Calculate total expenses and remaining budget
-	    double totalExpenses = expenses.stream().mapToDouble(Expense::getAmount).sum();
-	    double remainingBudget = user.getBudget() - totalExpenses;
+		// Perform different types of searches based on which search criteria are
+		// provided
+		if (searchDate != null && searchCategory != null && searchRemark != null) {
+			expenses = repository.findByAppuserAndDateAndCategoryAndRemarkContainingIgnoreCase(user, searchDate,
+					searchCategory, searchRemark);
+		} else if (searchDate != null && searchCategory != null) {
+			expenses = repository.findByAppuserAndDateAndCategory(user, searchDate, searchCategory);
+		} else if (searchDate != null && searchRemark != null) {
+			expenses = repository.findByAppuserAndDateAndRemarkContainingIgnoreCase(user, searchDate, searchRemark);
+		} else if (searchCategory != null && searchRemark != null) {
+			expenses = repository.findByAppuserAndCategoryAndRemarkContainingIgnoreCase(user, searchCategory,
+					searchRemark);
+		} else if (searchDate != null) {
+			expenses = repository.findByAppuserAndDate(user, searchDate);
+		} else if (searchCategory != null) {
+			expenses = repository.findByAppuserAndCategory(user, searchCategory);
+		} else if (searchRemark != null) {
+			expenses = repository.findByAppuserAndRemarkContainingIgnoreCase(user, searchRemark);
+		} else {
+			expenses = repository.findByAppuser(user);
+		}
 
-	    // Add the search results and other data to the model
-	    model.addAttribute("expenses", expenses);
-	    model.addAttribute("totalExpenses", totalExpenses);
-	    model.addAttribute("remainingBudget", remainingBudget);
-	    model.addAttribute("categorys", crepository.findAll());
+		// Calculate total expenses and remaining budget
+		double totalExpenses = expenses.stream().mapToDouble(Expense::getAmount).sum();
+		double remainingBudget = user.getBudget() - totalExpenses;
 
-	    // Return the view that displays the search results
-	    return "expenselist";
+		// Add the search results and other data to the model
+		model.addAttribute("expenses", expenses);
+		model.addAttribute("totalExpenses", totalExpenses);
+		model.addAttribute("remainingBudget", remainingBudget);
+		model.addAttribute("categorys", crepository.findAll());
+
+		// Return the view that displays the search results
+		return "expenselist";
 	}
 
 }
