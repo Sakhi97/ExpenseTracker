@@ -82,13 +82,13 @@
 							</div>
 						</div>
 					</div>
-					<div class="form-group" th:if="${#strings.isEmpty(user.authProvider) or user.authProvider.equals('GITHUB')}">
+					<div class="form-group">
 						<label for="oldPassword">Current Password:</label> <input
 							type="password" id="oldPassword" name="oldPassword"
 							class="form-control"
 							placeholder="Enter current password to change password">
 					</div>
-					<div class="form-group" th:if="${#strings.isEmpty(user.authProvider) or user.authProvider.equals('GITHUB')}">
+					<div class="form-group">
 						<label for="password">New Password:</label> <input type="password"
 							id="password" name="password" class="form-control"
 							placeholder="Enter new password">
