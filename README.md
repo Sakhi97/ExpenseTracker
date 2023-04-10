@@ -29,21 +29,27 @@ This application is built using the following features provided by Spring Boot:
 * User Profile Management: Users can update their profile information and manage their budget.
 * Admin Features: Administrators have the ability to manage user accounts.
 
-Components
+#### Components
 Repositories
 The application uses Spring Data JPA repositories to handle data access. The following repositories are used:
 
-ExpenseRepository: Repository for managing the Expense entities.
-CategoryRepository: Repository for managing the Category entities.
-AppUserRepository: Repository for managing the AppUser entities.
-Entities
-The application has the following entities:
+* ExpenseRepository: Repository for managing the Expense entities.
+* CategoryRepository: Repository for managing the Category entities.
+* AppUserRepository: Repository for managing the AppUser entities.
+* Entities
+
+#### The application has the following entities:
 
 Expense: Represents an expense entry with information such as date, amount, category, and remark.
 Category: Represents a category of expenses.
 AppUser: Represents a user of the application with information such as first name last name, password, role, username, email, and budget.
 
-Controller
+### Tests can be run manually to check CRUD functionalities and repositories.
+
+For tests is used H2 database and is created application-test.properties.
+
+
+#### Controller
 The ExpenseController class is responsible for handling HTTP requests and managing the flow of the application. It uses the repositories to interact with the data and returns the appropriate views. The controller has methods for the following operations:
 
 * Displaying the login page
@@ -59,10 +65,10 @@ The ExpenseController class is responsible for handling HTTP requests and managi
 
 The UserController class is resposible for handling HTTP requests related to signing up a new user.
 
-Redirecting to signup form.
-Saving a new user.
+* Redirecting to signup form.
+* Saving a new user.
 
-Views
+#### Views
 The application uses Thymeleaf templates to render the views. The following views are available:
 
 * login: The login page
