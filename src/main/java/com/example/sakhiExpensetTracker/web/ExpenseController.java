@@ -161,7 +161,7 @@ public class ExpenseController {
 	        return "redirect:/login";
 	    }
 
-	    return "redirect:/expenselist";
+	    return "redirect:/login";
 	}
 
 
