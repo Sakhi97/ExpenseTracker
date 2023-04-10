@@ -17,6 +17,7 @@ This application is built using the following features provided by Spring Boot:
 * H2 database for running tests
 * OAuth 2.0 Log In with OpenID Connect and non-standard OAuth 2.0 Login (GitHub)
 * Deployed In Heroku
+* Spring boot testing
 * The application provides a simple user interface for managing expenses, categories, budgets, and user profiles. The main class of the application is the ExpenseController class, which handles the HTTP requests, interacts with the repositories, and returns the appropriate views.
 
 ## Key features of the Expense Tracker application include:
@@ -45,17 +46,16 @@ AppUser: Represents a user of the application with information such as first nam
 Controller
 The ExpenseController class is responsible for handling HTTP requests and managing the flow of the application. It uses the repositories to interact with the data and returns the appropriate views. The controller has methods for the following operations:
 
-
-Displaying the login page
-Displaying the expense list
-Adding, editing, and deleting expenses
-Searching for expenses based on date, category, or remark
-Managing user profiles
-Managing budgets (updating and adding to the budget)
-Displaying the user list (only for admins)
-Deleting users (only for admins)
-Security
-The application uses Spring Security for authentication and authorization. Users are required to log in with a username and password to access the application. Spring Security is also used to restrict access to certain pages and actions based on the user's role (admin or regular user).
+* Displaying the login page
+* Displaying the expense list
+* Adding, editing, and deleting expenses
+* Searching for expenses based on date, category, or remark
+* Managing user profiles
+* Managing budgets (updating and adding to the budget)
+* Displaying the user list (only for admins)
+* Deleting users (only for admins)
+* Security
+* The application uses Spring Security for authentication and authorization. Users are required to log in with a username and password to access the application. Spring Security is also used to restrict access to certain pages and actions based on the user's role (admin or regular user).
 
 The UserController class is resposible for handling HTTP requests related to signing up a new user.
 
@@ -65,14 +65,14 @@ Saving a new user.
 Views
 The application uses Thymeleaf templates to render the views. The following views are available:
 
-login: The login page
-expenselist: The main expense list view
-addexpense: The form for adding a new expense
-editexpense: The form for editing an existing expense
-userprofile: The user's profile page
-userlist: The list of users (only for admins)
-Building the Application
-This application is built using Maven as the build tool. To build the application, run the following command from the root directory of the project:
+* login: The login page
+* expenselist: The main expense list view
+* addexpense: The form for adding a new expense
+* editexpense: The form for editing an existing expense
+* userprofile: The user's profile page
+* userlist: The list of users (only for admins)
+* Building the Application
+* This application is built using Maven as the build tool. To build the application, run the following command from the root directory of the project:
 
 `mvn clean install`
 
@@ -87,13 +87,13 @@ The application will be accessible at http://localhost:8080.
 
 To deploy in Heroku should be installed Heroku CLI. 
 
+should be added adds-on Heroku PostgreSQL database and configured application.properties. 
 
-
-
-
-
-
-should be added adds-on Heroku PostgreSQL database
-
-In application.properties 
+`
+spring.datasource.url=jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+spring.datasource.username=${DB_USERNAME}
+spring.datasource.password=${DB_PASSWORD}
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto=update
+`
 
