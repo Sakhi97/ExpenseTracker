@@ -117,52 +117,59 @@ public class ExpenseController {
 
 		return "redirect:/expenselist"; // Redirect to another page if not an admin
 	}
-
+	
 	@RequestMapping(value = "/updateprofile", method = RequestMethod.POST)
-	public String updateUserProfile(@RequestParam("username") String username,
-	                                 @RequestParam("firstname") String firstname,
-	                                 @RequestParam("lastname") String lastname,
-	                                 @RequestParam("email") String email,
-	                                 @RequestParam("password") String newPassword,
-	                                 @RequestParam("oldPassword") String oldPassword,
-	                                 Model model) {
-	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	    String currentPrincipalName = authentication.getName();
-	    AppUser currentUser = userRepository.findByUsername(currentPrincipalName);
+public String updateUserProfile(@RequestParam("username") String username,
+                                 @RequestParam("firstname") String firstname,
+                                 @RequestParam("lastname") String lastname,
+                                 @RequestParam("email") String email,
+                                 @RequestParam("password") String newPassword,
+                                 @RequestParam("oldPassword") String oldPassword,
+                                 Model model) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    String currentPrincipalName = authentication.getName();
+    AppUser currentUser = userRepository.findByUsername(currentPrincipalName);
 
-	    if (!username.isEmpty()) {
-	        currentUser.setUsername(username);
-	    }
-	    if (!firstname.isEmpty()) {
-	        currentUser.setFirstName(firstname);
-	    }
-	    if (!lastname.isEmpty()) {
-	        currentUser.setLastName(lastname);
-	    }
-	    if (!email.isEmpty()) {
-	        currentUser.setEmail(email);
-	    }
+    if (!username.isEmpty()) {
+        currentUser.setUsername(username);
+    }
+    if (!firstname.isEmpty()) {
+        currentUser.setFirstName(firstname);
+    }
+    if (!lastname.isEmpty()) {
+        currentUser.setLastName(lastname);
+    }
+    if (!email.isEmpty()) {
+        currentUser.setEmail(email);
+    }
 
-	    if (!newPassword.isEmpty() && !oldPassword.isEmpty()) {
-	        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-	        if (passwordEncoder.matches(oldPassword, currentUser.getPasswordHash())) {
-	            currentUser.setPasswordHash(passwordEncoder.encode(newPassword));
-	        } else {
-	            model.addAttribute("errorMessage", "Incorrect current password");
-	            model.addAttribute("user", currentUser);
-	            return "userprofile";
-	        }
-	    }
+    boolean passwordChanged = false;
+    if (!newPassword.isEmpty() && !oldPassword.isEmpty()) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        if (passwordEncoder.matches(oldPassword, currentUser.getPasswordHash())) {
+            currentUser.setPasswordHash(passwordEncoder.encode(newPassword));
+            passwordChanged = true;
+        } else {
+            model.addAttribute("errorMessage", "Incorrect current password");
+            model.addAttribute("user", currentUser);
+            return "userprofile";
+        }
+    }
 
-	    currentUser = userRepository.save(currentUser);
+    currentUser = userRepository.save(currentUser);
 
-	    // Redirect user to login page if changing username and logged in with Github
-	    if (currentUser.getAuthProvider() == AuthenticationProvider.GITHUB && !username.isEmpty()) {
-	        return "redirect:/login";
-	    }
+    // Re-authenticate the user after updating their profile
+    UsernamePasswordAuthenticationToken updatedAuth = new UsernamePasswordAuthenticationToken(
+            currentUser.getUsername(), passwordChanged ? newPassword : oldPassword,
+            authentication.getAuthorities()
+    );
 
-	    return "redirect:/login";
-	}
+    SecurityContextHolder.getContext().setAuthentication(updatedAuth);
+
+    return "redirect:/userprofile";
+}
+
+
 
 
 	// Save an expense
